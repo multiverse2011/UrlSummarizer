@@ -17,7 +17,8 @@ class TaskAdapter(
     private val context: Context,
     private var taskList: OrderedRealmCollection<Task>?,
     private var listener: OnItemClickListener,
-    private val autoUpdate: Boolean
+    private var listener2: OnItemLongClickListener,
+    autoUpdate: Boolean
 ) :
     RealmRecyclerViewAdapter<Task, TaskAdapter.TaskViewHolder>(taskList, autoUpdate) {
 
@@ -31,6 +32,11 @@ class TaskAdapter(
             listener.onItemClick(task)
         }
 
+        holder.container.setOnLongClickListener {
+            listener2.onItemLongClick(task)
+            true
+        }
+
         holder.contentTextView.text = task.content
         holder.dateTextView.text =
             SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.JAPANESE).format(task.createdAt)
@@ -42,12 +48,16 @@ class TaskAdapter(
     }
 
     class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        val container : LinearLayout = view.container
+        val container: LinearLayout = view.container
         val contentTextView: TextView = view.contentTextView
         val dateTextView: TextView = view.dateTextView
     }
-    
+
     interface OnItemClickListener {
         fun onItemClick(item: Task)
+    }
+
+    interface OnItemLongClickListener {
+        fun onItemLongClick(item: Task)
     }
 }

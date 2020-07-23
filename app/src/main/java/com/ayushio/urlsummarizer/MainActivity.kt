@@ -23,12 +23,23 @@ class MainActivity : AppCompatActivity() {
         val taskList = readAll()
 
         val adapter =
-            TaskAdapter(this, taskList, object : TaskAdapter.OnItemClickListener{
-            override fun onItemClick(item: Task) {
-                Toast.makeText(applicationContext, item.content + " deleted!", Toast.LENGTH_SHORT).show()
-                delete(item.id)
-            }
-        },true)
+            TaskAdapter(
+                this, taskList,
+                object : TaskAdapter.OnItemClickListener {
+                    override fun onItemClick(item: Task) {
+                    }
+                },
+                object : TaskAdapter.OnItemLongClickListener {
+                    override fun onItemLongClick(item: Task) {
+                        Toast.makeText(
+                            applicationContext,
+                            item.content + " deleted!",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        delete(item.id)
+                    }
+                }, true
+            )
 
         recyclerView.setHasFixedSize(true)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -36,39 +47,39 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createDummyData() {
-        for (i in 0..10){
+        for (i in 0..10) {
             create("やること")
         }
     }
 
-    private fun update(id: String, content: String){
+    private fun update(id: String, content: String) {
         realm.executeTransaction {
-            val task = realm.where(Task::class.java).equalTo("id",id).findFirst()
-                ?:return@executeTransaction
+            val task = realm.where(Task::class.java).equalTo("id", id).findFirst()
+                ?: return@executeTransaction
             task.content = content
         }
     }
 
-    private fun create(content: String){
-        realm.executeTransaction{
+    private fun create(content: String) {
+        realm.executeTransaction {
             val task = it.createObject(Task::class.java, UUID.randomUUID().toString())
             task.content = content
         }
     }
 
-    private fun readAll(): RealmResults<Task>{
-        return  realm.where(Task::class.java).findAll().sort("createdAt", Sort.ASCENDING)
+    private fun readAll(): RealmResults<Task> {
+        return realm.where(Task::class.java).findAll().sort("createdAt", Sort.ASCENDING)
     }
 
-    private fun delete(id :String){
-        realm.executeTransaction{
-            val task = realm.where(Task::class.java).equalTo("id",id).findFirst()
+    private fun delete(id: String) {
+        realm.executeTransaction {
+            val task = realm.where(Task::class.java).equalTo("id", id).findFirst()
                 ?: return@executeTransaction
             task.deleteFromRealm()
         }
     }
 
-    private fun deleteAll(){
+    private fun deleteAll() {
         realm.executeTransaction {
             realm.deleteAll()
         }
