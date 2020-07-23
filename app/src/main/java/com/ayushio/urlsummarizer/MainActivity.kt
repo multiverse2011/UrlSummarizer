@@ -48,7 +48,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun createDummyData() {
         for (i in 0..10) {
-            create("やること")
+            create("やること $i")
         }
     }
 
